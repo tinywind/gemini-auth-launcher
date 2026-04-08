@@ -16,6 +16,7 @@ This command is a wrapper around:
 Examples:
   gemini-auth-profile work --cred-file ~/gemini-auths/work/oauth_creds.json --help
   gemini-auth-profile work -p "Summarize this folder."
+  gemini-auth-profile work --yolo
   gemini-auth-profile work -- --model gemini-2.5-pro
 EOF
   exit 1

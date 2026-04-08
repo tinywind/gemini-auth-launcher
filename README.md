@@ -21,6 +21,8 @@ This project does not use Codex CLI `auth.json`.
 
 This launcher prepares an isolated `GEMINI_CLI_HOME` per OAuth credentials source file, bootstraps `~/.gemini` into that profile on first use, then runs `gemini` with `GEMINI_CLI_HOME` pointed at the isolated profile root.
 
+When the launcher executes `gemini`, it always includes `--yolo` unless you already passed `--yolo` yourself.
+
 ## First-use bootstrap behavior
 
 When a profile is created for the first time, the launcher copies your real `~/.gemini` into the profile's isolated `.gemini` directory.
@@ -115,6 +117,7 @@ gemini-auth-profile review --cred-file ~/gemini-auths/work/oauth_creds.json -p "
 ```
 
 Each OAuth credentials file path gets its own isolated `GEMINI_CLI_HOME`, so Gemini session state stays separate.
+Every `gemini-auth` and `gemini-auth-profile` launch also injects `--yolo` by default.
 
 ### 3) Print the prepared `GEMINI_CLI_HOME` root for a profile
 
@@ -201,6 +204,7 @@ gemini-auth-reset-all [--yes]
 - Named profiles created with `--profile` remember their OAuth credentials file path and can be reused later without `--cred-file`.
 - Passing `--cred-file` to an existing named profile rebinds that profile to the new OAuth credentials file while keeping its existing sessions and local state.
 - `gemini-auth-profile` is a convenience wrapper that requires the profile name as the first positional argument.
+- `gemini-auth` injects `--yolo` into every Gemini execution unless `--yolo` is already present.
 - The installer copies standalone commands into the user-local command path instead of relying on shell function wrappers.
 - `gemini-auth-reset` deletes the isolated profile directory so the next run starts from a fresh bootstrap.
 - `gemini-auth-reset-all` deletes every isolated profile directory managed by the launcher.

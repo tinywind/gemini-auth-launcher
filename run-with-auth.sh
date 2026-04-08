@@ -23,6 +23,7 @@ Examples:
   gemini-auth --cred-file ~/gemini-auths/work/oauth_creds.json --help
   gemini-auth --cred-file ~/gemini-auths/work/oauth_creds.json -p "Summarize this folder."
   gemini-auth --profile review --cred-file ~/gemini-auths/work/oauth_creds.json -p "Summarize this folder."
+  gemini-auth --yolo --profile review --cred-file ~/gemini-auths/work/oauth_creds.json
   gemini-auth --profile review --resume latest
   gemini-auth --link-config --share-path skills --cred-file ~/gemini-auths/work/oauth_creds.json
 EOF
@@ -67,6 +68,25 @@ ensure_auth_link() {
   fi
 
   ln -sfn "$source_path" "$target_path"
+}
+
+has_gemini_arg() {
+  local expected_arg="$1"
+  local gemini_arg
+
+  for gemini_arg in "${GEMINI_ARGS[@]}"; do
+    if [ "$gemini_arg" = "$expected_arg" ]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+apply_default_gemini_args() {
+  if ! has_gemini_arg "--yolo"; then
+    GEMINI_ARGS=("--yolo" "${GEMINI_ARGS[@]}")
+  fi
 }
 
 ensure_optional_auth_link() {
@@ -408,11 +428,14 @@ if [ "$PRINT_HOME" -eq 1 ]; then
   exit 0
 fi
 
+apply_default_gemini_args
+
 echo "Using isolated Gemini profile: $PROFILE_NAME" >&2
 echo "OAuth symlink (oauth_creds.json): $PROFILE_OAUTH_CREDS_FILE -> $OAUTH_CREDS_FILE" >&2
 if [ -n "$GOOGLE_ACCOUNTS_FILE" ]; then
   echo "Accounts symlink: $PROFILE_GOOGLE_ACCOUNTS_FILE -> $GOOGLE_ACCOUNTS_FILE" >&2
 fi
 echo "GEMINI_CLI_HOME: $PROFILE_HOME_ROOT" >&2
+echo "Gemini args: ${GEMINI_ARGS[*]}" >&2
 
 GEMINI_CLI_HOME="$PROFILE_HOME_ROOT" command gemini "${GEMINI_ARGS[@]}"
