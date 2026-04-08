@@ -22,20 +22,20 @@ load_stored_oauth_creds_source() {
 
 usage() {
   cat >&2 <<'EOF'
-Usage: gemini-auth-reset [--profile <name>] [--oauth-creds <path>] [--yes]
+Usage: gemini-auth-reset [--profile <name>] [--cred-file <path>] [--yes]
 
-Delete the isolated Gemini profile for the given OAuth credentials file.
+Delete the isolated Gemini profile for the given source OAuth credentials file.
 The next run recreates it by copying ~/.gemini and relinking auth files.
 
 Options:
   --profile <name>      Profile hint used when the profile was created.
-  --oauth-creds <path>  OAuth credentials file path. Optional when reusing an existing named profile.
+  --cred-file <path>    Source OAuth credentials file path. Optional when reusing a named profile.
   --yes                 Delete without confirmation.
   -h, --help            Show this help.
 
 Examples:
-  gemini-auth-reset --oauth-creds ~/gemini-auths/work/oauth_creds.json
-  gemini-auth-reset --yes --oauth-creds ~/gemini-auths/work/oauth_creds.json
+  gemini-auth-reset --cred-file ~/gemini-auths/work/oauth_creds.json
+  gemini-auth-reset --yes --cred-file ~/gemini-auths/work/oauth_creds.json
   gemini-auth-reset --profile review --yes
 EOF
   exit 1
@@ -52,7 +52,7 @@ while [ "$#" -gt 0 ]; do
       PROFILE_HINT="$2"
       shift 2
       ;;
-    --oauth-creds)
+    --cred-file)
       [ "$#" -ge 2 ] || usage
       OAUTH_CREDS_INPUT="$2"
       shift 2
@@ -125,7 +125,7 @@ if [ -n "$PROFILE_HINT" ]; then
   else
     if [ -z "$OAUTH_CREDS_FILE" ]; then
       echo "Profile \"$PROFILE_HINT\" does not exist yet." >&2
-      echo "Provide --oauth-creds only after that profile has been created, or create it first with gemini-auth." >&2
+      echo "Provide --cred-file only after that profile has been created, or create it first with gemini-auth." >&2
       exit 1
     fi
 
@@ -134,7 +134,7 @@ if [ -n "$PROFILE_HINT" ]; then
   fi
 else
   if [ -z "$OAUTH_CREDS_FILE" ]; then
-    echo "Missing required option: --oauth-creds" >&2
+    echo "Missing required option: --cred-file" >&2
     usage
   fi
 

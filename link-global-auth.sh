@@ -24,12 +24,12 @@ resolve_google_accounts_source() {
 
 usage() {
   cat >&2 <<'EOF'
-Usage: gemini-auth-link [--gemini-home <path>] --oauth-creds <oauth-creds-file> [--google-accounts <google-accounts-file>]
+Usage: gemini-auth-link [--gemini-home <path>] --cred-file <source-oauth-file> [--google-accounts <google-accounts-file>]
 
 Examples:
-  gemini-auth-link --oauth-creds ~/gemini-auths/work/oauth_creds.json
-  gemini-auth-link --gemini-home ~/.gemini-team --oauth-creds ~/gemini-auths/team/oauth_creds.json
-  gemini-auth-link --oauth-creds ~/gemini-auths/work/oauth_creds.json --google-accounts ~/gemini-auths/work/google_accounts.json
+  gemini-auth-link --cred-file ~/gemini-auths/work/oauth_creds.json
+  gemini-auth-link --gemini-home ~/.gemini-team --cred-file ~/gemini-auths/team/oauth_creds.json
+  gemini-auth-link --cred-file ~/gemini-auths/work/oauth_creds.json --google-accounts ~/gemini-auths/work/google_accounts.json
 EOF
   exit 1
 }
@@ -45,7 +45,7 @@ while [ "$#" -gt 0 ]; do
       TARGET_GEMINI_DIR="$2"
       shift 2
       ;;
-    --oauth-creds)
+    --cred-file)
       [ "$#" -ge 2 ] || usage
       OAUTH_CREDS_INPUT="$2"
       shift 2
@@ -70,12 +70,12 @@ while [ "$#" -gt 0 ]; do
 done
 
 if [ -z "$OAUTH_CREDS_INPUT" ]; then
-  echo "Missing required option: --oauth-creds" >&2
+  echo "Missing required option: --cred-file" >&2
   usage
 fi
 
 if [ ! -f "$OAUTH_CREDS_INPUT" ]; then
-  echo "OAuth credentials file not found: $OAUTH_CREDS_INPUT" >&2
+  echo "Source OAuth credentials file not found: $OAUTH_CREDS_INPUT" >&2
   exit 1
 fi
 
@@ -108,6 +108,7 @@ fi
 
 echo "Linked Gemini auth file:" >&2
 echo "  $GLOBAL_OAUTH_CREDS_FILE -> $OAUTH_CREDS_FILE" >&2
+echo "  Source files can use any basename; Gemini reads this path as oauth_creds.json." >&2
 if [ -n "$GOOGLE_ACCOUNTS_FILE" ]; then
   echo "Linked Gemini account file:" >&2
   echo "  $GLOBAL_GOOGLE_ACCOUNTS_FILE -> $GOOGLE_ACCOUNTS_FILE" >&2

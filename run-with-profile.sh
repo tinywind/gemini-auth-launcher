@@ -9,12 +9,12 @@ usage() {
 Usage: gemini-auth-profile <profile-name> [launcher options] [--] [gemini args...]
 
 The profile name must be the first positional argument.
-On first use of a profile, you must pass --oauth-creds <path>.
+On first use of a profile, you must pass --cred-file <path> to the source OAuth file.
 This command is a wrapper around:
   gemini-auth --profile <profile-name> ...
 
 Examples:
-  gemini-auth-profile work --oauth-creds ~/gemini-auths/work/oauth_creds.json --help
+  gemini-auth-profile work --cred-file ~/gemini-auths/work/oauth_creds.json --help
   gemini-auth-profile work -p "Summarize this folder."
   gemini-auth-profile work -- --model gemini-2.5-pro
 EOF

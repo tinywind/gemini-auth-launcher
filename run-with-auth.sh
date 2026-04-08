@@ -11,7 +11,7 @@ Usage: gemini-auth [options] [--] [gemini args...]
 
 Options:
   --profile <name>          Stable profile hint for the isolated GEMINI_CLI_HOME.
-  --oauth-creds <path>      OAuth credentials file path. Required on first use of a profile.
+  --cred-file <path>        Source OAuth credentials file path. Linked as oauth_creds.json on use.
   --google-accounts <path>  Optional google_accounts.json path.
   --base-home <path>        Existing ~/.gemini directory used by --link-config and --share-path.
   --link-config             Link settings.json from the base home into the profile.
@@ -20,11 +20,11 @@ Options:
   -h, --help                Show this help.
 
 Examples:
-  gemini-auth --oauth-creds ~/gemini-auths/work/oauth_creds.json --help
-  gemini-auth --oauth-creds ~/gemini-auths/work/oauth_creds.json -p "Summarize this folder."
-  gemini-auth --profile review --oauth-creds ~/gemini-auths/work/oauth_creds.json -p "Summarize this folder."
+  gemini-auth --cred-file ~/gemini-auths/work/oauth_creds.json --help
+  gemini-auth --cred-file ~/gemini-auths/work/oauth_creds.json -p "Summarize this folder."
+  gemini-auth --profile review --cred-file ~/gemini-auths/work/oauth_creds.json -p "Summarize this folder."
   gemini-auth --profile review --resume latest
-  gemini-auth --link-config --share-path skills --oauth-creds ~/gemini-auths/work/oauth_creds.json
+  gemini-auth --link-config --share-path skills --cred-file ~/gemini-auths/work/oauth_creds.json
 EOF
   exit 1
 }
@@ -182,7 +182,7 @@ while [ "$#" -gt 0 ]; do
       PROFILE_HINT="$2"
       shift 2
       ;;
-    --oauth-creds)
+    --cred-file)
       [ "$#" -ge 2 ] || usage
       OAUTH_CREDS_INPUT="$2"
       shift 2
@@ -234,7 +234,7 @@ STORED_OAUTH_CREDS_FILE=""
 STORED_GOOGLE_ACCOUNTS_FILE=""
 
 if [ -n "$OAUTH_CREDS_INPUT" ] && [ ! -f "$OAUTH_CREDS_INPUT" ]; then
-  echo "OAuth credentials file not found: $OAUTH_CREDS_INPUT" >&2
+  echo "Source OAuth credentials file not found: $OAUTH_CREDS_INPUT" >&2
   exit 1
 fi
 
@@ -273,7 +273,7 @@ if [ -n "$PROFILE_HINT" ]; then
     if [ -z "$OAUTH_CREDS_FILE" ]; then
       OAUTH_CREDS_FILE="$STORED_OAUTH_CREDS_FILE"
     elif [ -n "$STORED_OAUTH_CREDS_FILE" ] && [ "$OAUTH_CREDS_FILE" != "$STORED_OAUTH_CREDS_FILE" ]; then
-      echo "Updating oauth_creds.json for named profile \"$PROFILE_HINT\":" >&2
+      echo "Updating source file linked as oauth_creds.json for named profile \"$PROFILE_HINT\":" >&2
       echo "  $STORED_OAUTH_CREDS_FILE -> $OAUTH_CREDS_FILE" >&2
     fi
   else
@@ -283,13 +283,13 @@ if [ -n "$PROFILE_HINT" ]; then
   fi
 
   if [ -z "$OAUTH_CREDS_FILE" ]; then
-    echo "Profile \"$PROFILE_HINT\" does not have a stored oauth_creds.json yet." >&2
-    echo "Provide --oauth-creds on first use." >&2
+    echo "Profile \"$PROFILE_HINT\" does not have a stored source file for oauth_creds.json yet." >&2
+    echo "Provide --cred-file on first use." >&2
     exit 1
   fi
 else
   if [ -z "$OAUTH_CREDS_FILE" ]; then
-    echo "Missing required option: --oauth-creds" >&2
+    echo "Missing required option: --cred-file" >&2
     usage
   fi
 
@@ -301,7 +301,7 @@ else
 fi
 
 if [ ! -f "$OAUTH_CREDS_FILE" ]; then
-  echo "Stored OAuth credentials file not found: $OAUTH_CREDS_FILE" >&2
+  echo "Stored source OAuth credentials file not found: $OAUTH_CREDS_FILE" >&2
   exit 1
 fi
 
@@ -409,7 +409,7 @@ if [ "$PRINT_HOME" -eq 1 ]; then
 fi
 
 echo "Using isolated Gemini profile: $PROFILE_NAME" >&2
-echo "OAuth symlink: $PROFILE_OAUTH_CREDS_FILE -> $OAUTH_CREDS_FILE" >&2
+echo "OAuth symlink (oauth_creds.json): $PROFILE_OAUTH_CREDS_FILE -> $OAUTH_CREDS_FILE" >&2
 if [ -n "$GOOGLE_ACCOUNTS_FILE" ]; then
   echo "Accounts symlink: $PROFILE_GOOGLE_ACCOUNTS_FILE -> $GOOGLE_ACCOUNTS_FILE" >&2
 fi
