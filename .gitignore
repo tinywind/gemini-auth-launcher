@@ -1,0 +1,6 @@
+oauth_creds.json
+oauth_creds.json-*
+google_accounts.json
+google_accounts.json-*
+*.log
+*.pid
