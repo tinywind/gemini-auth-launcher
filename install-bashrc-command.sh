@@ -108,11 +108,14 @@ PY
 mkdir -p "$INSTALL_ROOT" "$BIN_DIR"
 
 copy_runtime_file "profile-common.sh" 644
+copy_runtime_file "sync-common.sh" 644
 copy_runtime_file "run-with-auth.sh" 755
 copy_runtime_file "run-with-profile.sh" 755
 copy_runtime_file "link-global-auth.sh" 755
 copy_runtime_file "reset-profile.sh" 755
 copy_runtime_file "reset-all-profiles.sh" 755
+copy_runtime_file "resync-profile.sh" 755
+copy_runtime_file "resync-all-profiles.sh" 755
 
 write_wrapper "$BIN_DIR/gemini-auth" "$INSTALL_ROOT/run-with-auth.sh"
 write_wrapper "$BIN_DIR/gemini-auth-profile" "$INSTALL_ROOT/run-with-profile.sh"
@@ -120,6 +123,8 @@ write_wrapper "$BIN_DIR/gemini-auth-link" "$INSTALL_ROOT/link-global-auth.sh"
 write_wrapper "$BIN_DIR/gemini-auth-home" "$INSTALL_ROOT/run-with-auth.sh" --print-home
 write_wrapper "$BIN_DIR/gemini-auth-reset" "$INSTALL_ROOT/reset-profile.sh"
 write_wrapper "$BIN_DIR/gemini-auth-reset-all" "$INSTALL_ROOT/reset-all-profiles.sh"
+write_wrapper "$BIN_DIR/gemini-auth-resync" "$INSTALL_ROOT/resync-profile.sh"
+write_wrapper "$BIN_DIR/gemini-auth-resync-all" "$INSTALL_ROOT/resync-all-profiles.sh"
 
 update_shell_rc "$TARGET_FILE"
 

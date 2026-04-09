@@ -36,6 +36,14 @@ Later runs for the same OAuth credentials source file reuse the same profile hom
 If you create a named profile with `--profile`, that profile remembers its canonical OAuth credentials source path in `profile.json`.
 After the first run, you can reuse that profile by name without passing `--cred-file` again.
 
+## Config resync commands
+
+Use `gemini-auth-resync` or `gemini-auth-resync-all` when you want to refresh shared Gemini config from `~/.gemini` without resetting profiles.
+
+- Auth files are never copied. Profiles keep their existing `oauth_creds.json` and `google_accounts.json` links.
+- Session and message history stay profile-local and are not overwritten.
+- Shared config surfaces such as agents, hooks, skills, scripts, MCP config, and `GEMINI.md` are recopied from `~/.gemini` and overwrite the profile copy.
+
 ## Companion `google_accounts.json`
 
 Gemini may also use `google_accounts.json` alongside the internal `oauth_creds.json` filename.
@@ -96,6 +104,19 @@ Your source auth files remain the single source of truth, so refreshed tokens st
    gemini-auth-reset-all --yes
    ```
 
+7. Resync shared config into one existing profile:
+
+   ```bash
+   gemini-auth-resync --profile work
+   gemini-auth-resync --cred-file ~/gemini-auths/work/oauth_creds.json
+   ```
+
+8. Resync shared config into every existing profile:
+
+   ```bash
+   gemini-auth-resync-all
+   ```
+
 ## Commands
 
 ### 1) Switch the global auth link
@@ -152,6 +173,23 @@ gemini-auth-reset-all
 gemini-auth-reset-all --yes
 ```
 
+### 7) Resync shared config into one isolated profile
+
+```bash
+gemini-auth-resync --profile review
+gemini-auth-resync --cred-file ~/gemini-auths/work/oauth_creds.json
+gemini-auth-resync --profile review --base-home ~/.gemini-team
+```
+
+This refreshes shared config from the selected base home without overwriting auth links or profile-local session history.
+
+### 8) Resync shared config into every isolated profile
+
+```bash
+gemini-auth-resync-all
+gemini-auth-resync-all --base-home ~/.gemini-team
+```
+
 ## Launcher command syntax
 
 ```bash
@@ -161,6 +199,8 @@ gemini-auth-link [--gemini-home <path>] --cred-file <oauth-creds-file> [--google
 gemini-auth-home [--profile <name>] [--cred-file <path>] [--google-accounts <path>] [--base-home <path>] [--link-config] [--share-path <relative-path>]...
 gemini-auth-reset [--profile <name>] [--cred-file <path>] [--yes]
 gemini-auth-reset-all [--yes]
+gemini-auth-resync [--profile <name>] [--cred-file <path>] [--base-home <path>]
+gemini-auth-resync-all [--base-home <path>]
 ```
 
 ## Files created by the launcher
@@ -181,11 +221,14 @@ gemini-auth-reset-all [--yes]
 
 ~/.local/share/gemini-auth-launcher/
 ├── profile-common.sh
+├── sync-common.sh
 ├── run-with-auth.sh
 ├── run-with-profile.sh
 ├── link-global-auth.sh
 ├── reset-profile.sh
-└── reset-all-profiles.sh
+├── reset-all-profiles.sh
+├── resync-profile.sh
+└── resync-all-profiles.sh
 
 ~/.local/bin/
 ├── gemini-auth
@@ -193,7 +236,9 @@ gemini-auth-reset-all [--yes]
 ├── gemini-auth-link
 ├── gemini-auth-home
 ├── gemini-auth-reset
-└── gemini-auth-reset-all
+├── gemini-auth-reset-all
+├── gemini-auth-resync
+└── gemini-auth-resync-all
 ```
 
 ## Notes
@@ -208,5 +253,7 @@ gemini-auth-reset-all [--yes]
 - The installer copies standalone commands into the user-local command path instead of relying on shell function wrappers.
 - `gemini-auth-reset` deletes the isolated profile directory so the next run starts from a fresh bootstrap.
 - `gemini-auth-reset-all` deletes every isolated profile directory managed by the launcher.
+- `gemini-auth-resync` refreshes shared config from the base home into one existing profile without overwriting auth links or session history.
+- `gemini-auth-resync-all` applies the same resync behavior to every existing isolated profile.
 - `--link-config` links `settings.json` from the base home. Leave it off when you want strict isolation.
 - `--share-path` should only be used for files or directories you intentionally want to share.
