@@ -67,7 +67,7 @@ Your source auth files remain the single source of truth, so refreshed tokens st
 1. Install the local commands:
 
    ```bash
-   bash ~/IdeaProjects/gemini-auth-launcher/install-bashrc-command.sh
+   bash ~/Projects/gemini-auth-launcher/install-bashrc-command.sh
    source ~/.bashrc
    ```
 
